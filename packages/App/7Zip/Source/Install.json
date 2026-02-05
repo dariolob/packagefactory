@@ -1,0 +1,15 @@
+{
+  "PackageInformation": {
+    "SetupType": "MSI",
+    "SetupFile": "7Zipx64.msi",
+    "Version": "25.0.0"
+  },
+  "LogPath": "C:\\ProgramData\\Microsoft\\IntuneManagementExtension\\Logs",
+  "InstallTasks": {
+    "ArgumentList": "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- /MERGETASKS=\"!desktopicon\" /log \"#LogPath\\#LogName.log\""
+  },
+  "PostInstall": {
+    "Remove": [],
+    "CopyFile": []
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "Application": {
+    "Name": "7-Zip",
+    "Filter": "Get-EvergreenApp -Name \"7-Zip\" | Where-Object { $_.Architecture -eq \"x64\" } | Select-Object -First 1",
+    "Title": "7-Zip",
+    "Language": "en-US",
+    "Architecture": "x64"
+  },
+  "PackageInformation": {
+    "SetupType": "MSI",
+    "SetupFile": "7Zipx64.msi",
+    "Version": "25.0.0",
+    "SourceFolder": "Source",
+    "OutputFolder": "Package",
+    "IconFile": "https://github.com/aaronparker/icons/raw/main/companyportal/7-Zip.png"
+  },
+  "Information": {
+    "DisplayName": "7-Zip 25.00 x64",
+    "Description": "7-Zip",
+    "Publisher": "Audacity",
+    "InformationURL": "www.7-zip.org/",
+    "PrivacyURL": "www.7-zip.org/",
+    "Categories": [],
+    "PSPackageFactoryGuid": "eb6c2a1f-0f41-4728-a9b4-2a8726e2c8b7"
+  },
+  "Program": {
+    "InstallTemplate": "powershell.exe -ExecutionPolicy Bypass -NonInteractive -WindowStyle Hidden -File .\\Install.ps1",
+    "InstallCommand": "powershell.exe -ExecutionPolicy Bypass -NonInteractive -WindowStyle Hidden -File .\\Install.ps1",
+    "UninstallCommand": "\"C:\\Program Files\\7-Zip\\Uninstall.exe\" /VERYSILENT",
+    "InstallExperience": "system",
+    "DeviceRestartBehavior": "basedOnReturnCode",
+    "AllowAvailableUninstall": false
+  },
+  "RequirementRule": {
+    "MinimumRequiredOperatingSystem": "W10_1809",
+    "Architecture": "x64"
+  },
+  "CustomRequirementRule": [],
+  "DetectionRule": [
+    {
+      "Type": "File",
+      "DetectionMethod": "Version",
+      "Path": "C:\\Program Files\\7-Zip",
+      "FileOrFolder": "7z.exe",
+      "Operator": "greaterThanOrEqual",
+      "VersionValue": "25.0.0.0",
+      "Check32BitOn64System": "false"
+    }
+  ],
+  "Dependencies": [],
+  "Supersedence": [],
+  "Assignments": [
+    {
+      "Type": "AllUsers",
+      "Intent": "available",
+      "Notification": "showAll",
+      "EnableRestartGracePeriod": true,
+      "RestartGracePeriod": 1440,
+      "RestartCountDownDisplay": 15,
+      "RestartNotificationSnooze": 240
+    }
+  ]
+}
