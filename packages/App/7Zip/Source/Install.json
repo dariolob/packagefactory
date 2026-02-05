@@ -1,6 +1,6 @@
 {
   "PackageInformation": {
-    "SetupType": "MSI",
+    "SetupType": "EXE",
     "SetupFile": "7z2501-x64.exe",
     "Version": "25.01"
   },
