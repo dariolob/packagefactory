@@ -1,10 +1,11 @@
-trigger: none
+trigger: none   # oppure: - main per trigger automatici
 
 pool:
-  vmImage: 'windows-latest'   # oppure un agente Windows self-hosted
+  vmImage: 'windows-latest'    # oppure un agente self-hosted Windows
 
+# Le secret stanno in Azure DevOps (Library -> Variable Group)
 variables:
-- group: IntuneCredentials    # contiene TENANT_ID / CLIENT_ID / CLIENT_SECRET
+- group: IntuneCredentials      # contiene TENANT_ID / CLIENT_ID / CLIENT_SECRET
 - name: INTUNE_TENANT
   value: $(TENANT_ID)
 - name: INTUNE_APPID
@@ -14,14 +15,18 @@ variables:
 
 steps:
 
+# 1) Checkout del repository GitHub
 - checkout: self
   clean: true
 
+# 2–4) Tutto in un singolo processo PowerShell per mantenere il token valido
 - task: PowerShell@2
-  displayName: "Ensure PSPackageFactory dependencies"
+  displayName: "Install modules + Update Evergreen + Connect + Run PSPackageFactory"
   inputs:
     targetType: inline
+    workingDirectory: "$(Build.SourcesDirectory)"
     script: |
+      Write-Host "=== INSTALL REQUIRED MODULES IF NEEDED ==="
       $modules = @('IntuneWin32App','Evergreen','VcRedist','MSAL.PS')
       foreach ($m in $modules) {
         if (-not (Get-Module -ListAvailable -Name $m)) {
@@ -32,38 +37,25 @@ steps:
         }
       }
 
-- task: PowerShell@2
-  displayName: "Test variable visibility"
-  inputs:
-    targetType: inline
-    script: |
-      Write-Host "Tenant: $(INTUNE_TENANT)"
-      Write-Host "ClientId: $(INTUNE_APPID)"
-      Write-Host "Secret loaded: OK"
-      
-- task: PowerShell@2
-  displayName: "Authenticate to MS Graph"
-  inputs:
-    targetType: inline
-    script: |
-      $params = @{
+      Write-Host "=== UPDATE EVERGREEN PACKAGE DEFINITIONS ==="
+      Import-Module Evergreen -Force
+      Update-Evergreen -Force   # richiesto se il runner è effimero (windows-latest)
+
+      Write-Host "=== AUTHENTICATING TO MICROSOFT GRAPH VIA APP REGISTRATION ==="
+      $paramsAuth = @{
         TenantId     = "$(INTUNE_TENANT)"
         ClientId     = "$(INTUNE_APPID)"
         ClientSecret = "$(INTUNE_KEY)"
       }
-      Connect-MSIntuneGraph @params
+      Connect-MSIntuneGraph @paramsAuth
 
-- task: PowerShell@2
-  displayName: "Run PSPackageFactory packaging"
-  inputs:
-    targetType: inline
-    workingDirectory: "$(Build.SourcesDirectory)"
-    script: |
+      Write-Host "=== RUN PSPACKAGEFACTORY ==="
       $params = @{
         Path        = ".\packages"
-        Application = "MicrosoftOneDrive", "MozillaFirefox"
+        Application = "MicrosoftOneDrive", "MozillaFirefox"   # MODIFICA QUI LE APP
         Type        = "App"
         WorkingPath = ".\output"
         Import      = $true
       }
+
       .\New-Win32Package.ps1 @params -Verbose
