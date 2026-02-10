@@ -33,6 +33,15 @@ steps:
       }
 
 - task: PowerShell@2
+  displayName: "Test variable visibility"
+  inputs:
+    targetType: inline
+    script: |
+      Write-Host "Tenant: $(INTUNE_TENANT)"
+      Write-Host "ClientId: $(INTUNE_APPID)"
+      Write-Host "Secret loaded: OK"
+      
+- task: PowerShell@2
   displayName: "Authenticate to MS Graph"
   inputs:
     targetType: inline
