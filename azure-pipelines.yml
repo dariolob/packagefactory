@@ -52,7 +52,7 @@ steps:
       Write-Host "=== RUN PSPACKAGEFACTORY ==="
       $params = @{
         Path        = ".\packages"
-        Application = "MozillaFirefox"   # MODIFICA QUI LE APP
+        Application = "MozillaFirefox", "MicrosoftOneDrive"   # MODIFICA QUI LE APP
         Type        = "App"
         WorkingPath = ".\output"
         Import      = $true
