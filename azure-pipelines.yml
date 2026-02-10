@@ -1,0 +1,60 @@
+trigger: none
+
+pool:
+  vmImage: 'windows-latest'   # oppure un agente Windows self-hosted
+
+variables:
+- group: IntuneCredentials    # contiene TENANT_ID / CLIENT_ID / CLIENT_SECRET
+- name: INTUNE_TENANT
+  value: $(TENANT_ID)
+- name: INTUNE_APPID
+  value: $(CLIENT_ID)
+- name: INTUNE_KEY
+  value: $(CLIENT_SECRET)
+
+steps:
+
+- checkout: self
+  clean: true
+
+- task: PowerShell@2
+  displayName: "Ensure PSPackageFactory dependencies"
+  inputs:
+    targetType: inline
+    script: |
+      $modules = @('IntuneWin32App','Evergreen','VcRedist','MSAL.PS')
+      foreach ($m in $modules) {
+        if (-not (Get-Module -ListAvailable -Name $m)) {
+          Write-Host "Installing module $m..."
+          Install-Module -Name $m -Force -SkipPublisherCheck
+        } else {
+          Write-Host "Module $m already installed."
+        }
+      }
+
+- task: PowerShell@2
+  displayName: "Authenticate to MS Graph"
+  inputs:
+    targetType: inline
+    script: |
+      $params = @{
+        TenantId     = "$(INTUNE_TENANT)"
+        ClientId     = "$(INTUNE_APPID)"
+        ClientSecret = "$(INTUNE_KEY)"
+      }
+      Connect-MSIntuneGraph @params
+
+- task: PowerShell@2
+  displayName: "Run PSPackageFactory packaging"
+  inputs:
+    targetType: inline
+    workingDirectory: "$(Build.SourcesDirectory)"
+    script: |
+      $params = @{
+        Path        = ".\packages"
+        Application = "MicrosoftOneDrive", "MozillaFirefox"
+        Type        = "App"
+        WorkingPath = ".\output"
+        Import      = $true
+      }
+      .\New-Win32Package.ps1 @params -Verbose
