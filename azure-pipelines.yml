@@ -1,11 +1,11 @@
-trigger: none   # oppure: - main per trigger automatici
+trigger: none   # no triggers since this is just a demo
 
 pool:
-  vmImage: 'windows-latest'    # oppure un agente self-hosted Windows
+  vmImage: 'windows-latest'    # we may self-host for persistency
 
-# Le secret stanno in Azure DevOps (Library -> Variable Group)
+# secrets are stored in Azure DevOps (Library -> Variable Group)
 variables:
-- group: IntuneCredentials      # contiene TENANT_ID / CLIENT_ID / CLIENT_SECRET
+- group: IntuneCredentials      # TENANT_ID / CLIENT_ID / CLIENT_SECRET
 - name: INTUNE_TENANT
   value: $(TENANT_ID)
 - name: INTUNE_APPID
@@ -15,11 +15,11 @@ variables:
 
 steps:
 
-# 1) Checkout del repository GitHub
+# GitHub checkout
 - checkout: self
   clean: true
 
-# 2–4) Tutto in un singolo processo PowerShell per mantenere il token valido
+
 - task: PowerShell@2
   displayName: "Install modules + Update Evergreen + Connect + Run PSPackageFactory"
   inputs:
@@ -39,7 +39,7 @@ steps:
 
       Write-Host "=== UPDATE EVERGREEN PACKAGE DEFINITIONS ==="
       Import-Module Evergreen -Force
-      Update-Evergreen -Force   # richiesto se il runner è effimero (windows-latest)
+      Update-Evergreen -Force  
 
       Write-Host "=== AUTHENTICATING TO MICROSOFT GRAPH VIA APP REGISTRATION ==="
       $paramsAuth = @{
@@ -52,7 +52,7 @@ steps:
       Write-Host "=== RUN PSPACKAGEFACTORY ==="
       $params = @{
         Path        = ".\packages"
-        Application = "MozillaFirefox", "MicrosoftOneDrive"   # MODIFICA QUI LE APP
+        Application = "Notepad++""   # App list here
         Type        = "App"
         WorkingPath = ".\output"
         Import      = $true
