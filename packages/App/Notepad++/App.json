@@ -49,5 +49,15 @@
   ],
   "Dependencies": [],
   "Supersedence": [],
-  "Assignments": []
+  "Assignments": [
+    {
+      "Type": "Group",
+      "groupId": "c30454a4-c8c7-4d6f-9419-91fc7bf1f262",
+      "Intent": "required",
+      "Notification": "showAll",
+      "EnableRestartGracePeriod": true,
+      "RestartGracePeriod": 1440,
+      "RestartCountDownDisplay": 15,
+      "RestartNotificationSnooze": 240
+    }
 }
