@@ -11,9 +11,9 @@ variables:
 - name: INTUNE_APPID
   value: $(CLIENT_ID)
 - name: INTUNE_CERT_PASSWORD
-  value: $(CERT_PASS)           # password del PFX
+  value: $(CERT_PASS)           
 - name: INTUNE_PFX_NAME
-  value: "IntuneAutomation.pfx" # nome del file PFX caricato in Secure Files
+  value: "IntuneAutomation.pfx" 
 
 steps:
 
