@@ -5,19 +5,42 @@ pool:
 
 # secrets are stored in Azure DevOps (Library -> Variable Group)
 variables:
-- group: IntuneCredentials      # TENANT_ID / CLIENT_ID / CLIENT_SECRET
+- group: IntuneCredentials      # TENANT_ID / CLIENT_ID / CLIENT_SECRET / CERT_PASS
 - name: INTUNE_TENANT
   value: $(TENANT_ID)
 - name: INTUNE_APPID
   value: $(CLIENT_ID)
-- name: INTUNE_KEY
-  value: $(CLIENT_SECRET)
+- name: INTUNE_CERT_PASSWORD
+  value: $(CERT_PASS)           # password del PFX
+- name: INTUNE_PFX_NAME
+  value: "IntuneAutomation.pfx" # nome del file PFX caricato in Secure Files
 
 steps:
 
 # GitHub checkout
 - checkout: self
   clean: true
+
+# === IMPORT PFX ===
+- task: DownloadSecureFile@1
+  name: downloadedPfx
+  inputs:
+    secureFile: $(INTUNE_PFX_NAME)
+
+- task: PowerShell@2
+  displayName: "Import PFX into Cert Store"
+  inputs:
+    targetType: inline
+    script: |
+      Write-Host "=== IMPORTING PRIVATE CERTIFICATE (.PFX) INTO CURRENTUSER STORE ==="
+      $pfxPath = "$(downloadedPfx.secureFilePath)"
+      $password = "$(INTUNE_CERT_PASSWORD)" | ConvertTo-SecureString -AsPlainText -Force
+
+      # Importa il certificato (CON chiave privata) nello store dell'agente
+      $cert = Import-PfxCertificate -FilePath $pfxPath -Password $password -CertStoreLocation Cert:\CurrentUser\My
+
+      Write-Host "Imported certificate with thumbprint: $($cert.Thumbprint)"
+      Write-Host "##vso[task.setvariable variable=CERT_THUMBPRINT]$($cert.Thumbprint)"
 
 
 - task: PowerShell@2
@@ -41,18 +64,21 @@ steps:
       Import-Module Evergreen -Force
       Update-Evergreen -Force  
 
-      Write-Host "=== AUTHENTICATING TO MICROSOFT GRAPH VIA APP REGISTRATION ==="
+      Write-Host "=== AUTHENTICATING TO MICROSOFT GRAPH VIA CERTIFICATE ==="
+      $cert = Get-Item "Cert:\CurrentUser\My\$(CERT_THUMBPRINT)"
+
       $paramsAuth = @{
         TenantId     = "$(INTUNE_TENANT)"
         ClientId     = "$(INTUNE_APPID)"
-        ClientSecret = "$(INTUNE_KEY)"
+        ClientCert   = $cert
       }
+
       Connect-MSIntuneGraph @paramsAuth
 
       Write-Host "=== RUN PSPACKAGEFACTORY ==="
       $params = @{
         Path        = ".\packages"
-        Application = "Notepad++"   # App list here
+        Application = "CitrixWorkspaceAppLTSR"   # App list here
         Type        = "App"
         WorkingPath = ".\output"
         Import      = $true
