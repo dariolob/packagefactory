@@ -8,14 +8,14 @@
   },
   "PackageInformation": {
     "SetupType": "EXE",
-    "SetupFile": "7z2501-x64.exe",
-    "Version": "25.01",
+    "SetupFile": "7z2600-x64.exe",
+    "Version": "26.00",
     "SourceFolder": "Source",
     "OutputFolder": "Package",
     "IconFile": "https://github.com/aaronparker/icons/raw/main/companyportal/7-Zip.png"
   },
   "Information": {
-    "DisplayName": "7-Zip 25.01 x64",
+    "DisplayName": "7-Zip 26.00 x64",
     "Description": "7-Zip",
     "Publisher": "Audacity",
     "InformationURL": "www.7-zip.org/",
@@ -43,7 +43,7 @@
       "Path": "C:\\Program Files\\7-Zip",
       "FileOrFolder": "7z.exe",
       "Operator": "greaterThanOrEqual",
-      "VersionValue": "25.01",
+      "VersionValue": "26.00",
       "Check32BitOn64System": "false"
     }
   ],
