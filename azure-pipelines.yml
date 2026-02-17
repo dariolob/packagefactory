@@ -5,7 +5,7 @@ pool:
 
 # secrets are stored in Azure DevOps (Library -> Variable Group)
 variables:
-- group: IntuneCredentials      # TENANT_ID / CLIENT_ID / CLIENT_SECRET / CERT_PASS
+- group: IntuneCredentials      # TENANT_ID / CLIENT_ID / CERT_PASS
 - name: INTUNE_TENANT
   value: $(TENANT_ID)
 - name: INTUNE_APPID
@@ -21,7 +21,8 @@ steps:
 - checkout: self
   clean: true
 
-# === IMPORT PFX ===
+
+# === IMPORT PFX  ===
 - task: DownloadSecureFile@1
   name: downloadedPfx
   inputs:
@@ -36,13 +37,26 @@ steps:
       $pfxPath = "$(downloadedPfx.secureFilePath)"
       $password = "$(INTUNE_CERT_PASSWORD)" | ConvertTo-SecureString -AsPlainText -Force
 
-      # Importa il certificato (CON chiave privata) nello store dell'agente
-      $cert = Import-PfxCertificate -FilePath $pfxPath -Password $password -CertStoreLocation Cert:\CurrentUser\My
+      # Import certificato con PRIVATE KEY (fondamentale)
+      $cert = Import-PfxCertificate `
+          -FilePath $pfxPath `
+          -Password $password `
+          -Exportable `
+          -CertStoreLocation "Cert:\CurrentUser\My"
 
-      Write-Host "Imported certificate with thumbprint: $($cert.Thumbprint)"
+      Write-Host "Imported certificate thumbprint: $($cert.Thumbprint)"
       Write-Host "##vso[task.setvariable variable=CERT_THUMBPRINT]$($cert.Thumbprint)"
 
+      # Test della presenza della private key
+      $certTest = Get-Item "Cert:\CurrentUser\My\$($cert.Thumbprint)"
+      Write-Host "CERTIFICATE HAS PRIVATE KEY: $($certTest.HasPrivateKey)"
 
+      if (-not $certTest.HasPrivateKey) {
+        Write-Error "❌ Il certificato non contiene la PRIVATE KEY. Impossibile autenticarsi con Connect‑MSIntuneGraph."
+      }
+
+
+# Install modules + Update Evergreen + Connect + Run PSPackageFactory
 - task: PowerShell@2
   displayName: "Install modules + Update Evergreen + Connect + Run PSPackageFactory"
   inputs:
@@ -68,12 +82,12 @@ steps:
       $cert = Get-Item "Cert:\CurrentUser\My\$(CERT_THUMBPRINT)"
 
       $paramsAuth = @{
-        TenantId     = "$(INTUNE_TENANT)"
-        ClientId     = "$(INTUNE_APPID)"
-        ClientCert   = $cert
+        TenantId   = "$(INTUNE_TENANT)"
+        ClientId   = "$(INTUNE_APPID)"
+        ClientCert = $cert
       }
 
-      Connect-MSIntuneGraph @paramsAuth
+      Connect-MSIntuneGraph @paramsAuth -Verbose
 
       Write-Host "=== RUN PSPACKAGEFACTORY ==="
       $params = @{
