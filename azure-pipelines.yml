@@ -92,7 +92,7 @@ steps:
       Write-Host "=== RUN PSPACKAGEFACTORY ==="
       $params = @{
         Path        = ".\packages"
-        Application = "CitrixWorkspaceAppLTSR"   # App list here
+        Application = "Notepad++"   # App list here
         Type        = "App"
         WorkingPath = ".\output"
         Import      = $true
