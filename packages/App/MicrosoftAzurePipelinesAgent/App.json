@@ -136,7 +136,7 @@
       "bin\\MS.TF.Pipelines.WebApi.NetStandard.dll",
       "bin\\msalruntime.dll",
       "bin\\mscordaccore.dll",
-      "bin\\mscordaccore_amd64_amd64_10.0.926.27113.dll",
+      "bin\\mscordaccore_amd64_amd64_10.0.1026.32716.dll",
       "bin\\mscordbi.dll",
       "bin\\mscorlib.dll",
       "bin\\mscorrc.dll",
@@ -493,7 +493,6 @@
       "externals\\git\\mingw64\\bin\\libssh2-1.dll",
       "externals\\git\\mingw64\\bin\\libssl-3-x64.dll",
       "externals\\git\\mingw64\\bin\\libunistring-5.dll",
-      "externals\\git\\mingw64\\bin\\libwinpthread-1.dll",
       "externals\\git\\mingw64\\bin\\libzstd.dll",
       "externals\\git\\mingw64\\bin\\MicroCom.Runtime.dll",
       "externals\\git\\mingw64\\bin\\Microsoft.AzureRepos.dll",
@@ -504,7 +503,6 @@
       "externals\\git\\mingw64\\bin\\Microsoft.Identity.Client.NativeInterop.dll",
       "externals\\git\\mingw64\\bin\\Microsoft.IdentityModel.Abstractions.dll",
       "externals\\git\\mingw64\\bin\\msalruntime.dll",
-      "externals\\git\\mingw64\\bin\\msalruntime_x86.dll",
       "externals\\git\\mingw64\\bin\\pcre2-config",
       "externals\\git\\mingw64\\bin\\printf_gettext.exe",
       "externals\\git\\mingw64\\bin\\printf_ngettext.exe",
@@ -2061,13 +2059,13 @@
       "externals\\vstshost\\zh-Hant\\TF.resources.dll",
       "externals\\vswhere\\vswhere.exe"
     ],
-    "Version": "5.276.0",
+    "Version": "5.277.0",
     "SourceFolder": "Source",
     "OutputFolder": "Package",
     "IconFile": "https://github.com/aaronparker/icons/raw/main/companyportal/Microsoft-AzurePipelines.png"
   },
   "Information": {
-    "DisplayName": "Microsoft Azure Pipelines Agent 5.276.0 x64",
+    "DisplayName": "Microsoft Azure Pipelines Agent 5.277.0 x64",
     "Description": "The Microsoft Azure Pipelines Agent used to deploy to target machines and create a self hosted pipelines runner in Azure Pipelines.",
     "Publisher": "Microsoft",
     "InformationURL": "https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents",
@@ -2095,7 +2093,7 @@
       "Path": "C:\\agents\\bin",
       "FileOrFolder": "Agent.Worker.exe",
       "Operator": "greaterThanOrEqual",
-      "VersionValue": "5.276.0",
+      "VersionValue": "5.277.0",
       "Check32BitOn64System": "false"
     }
   ],
