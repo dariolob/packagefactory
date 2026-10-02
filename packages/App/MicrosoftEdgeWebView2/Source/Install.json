@@ -2,7 +2,7 @@
   "PackageInformation": {
     "SetupType": "EXE",
     "SetupFile": "MicrosoftEdgeWebView2RuntimeInstallerX64.exe",
-    "Version": "154.0.4258.48"
+    "Version": "154.0.4258.53"
   },
   "LogPath": "C:\\ProgramData\\Microsoft\\IntuneManagementExtension\\Logs",
   "InstallTasks": {
