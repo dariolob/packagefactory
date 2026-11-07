@@ -1,8 +1,8 @@
 {
   "PackageInformation": {
     "SetupType": "EXE",
-    "SetupFile": "7z2605-x64.exe",
-    "Version": "26.05"
+    "SetupFile": "7z2606-x64.exe",
+    "Version": "26.06"
   },
   "LogPath": "C:\\ProgramData\\Microsoft\\IntuneManagementExtension\\Logs",
   "InstallTasks": {
